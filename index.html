@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coworker Timezone Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 20px auto;
+      background: #f9fafb;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f3f3f3;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .coworker-row:hover {
+      background-color: #fdfdfd;
+    }
+
+    .drop-hover {
+      background-color: #e8f3fe !important;
+    }
+
+    .drag-handle {
+      cursor: move;
+      user-select: none;
+      font-size: 18px;
+      text-align: center;
+      color: #888;
+      width: 40px;
+    }
+
+    .name-cell input[type="text"] {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .remove-btn {
+      color: #fff;
+      background: #d33;
+      border: none;
+      padding: 0 10px;
+      font-size: 16px;
+      line-height: 28px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .remove-btn:hover {
+      background: #b00;
+    }
+
+    #add-coworker-btn {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: 8px 16px;
+      background: #4c9eff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #add-coworker-btn:hover {
+      background: #3885dd;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Coworker Timezone Tracker</h2>
+
+  <button id="add-coworker-btn">Add Coworker</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 40px;"></th>
+        <th>Name</th>
+        <th>Time Zone</th>
+        <th>Current Time</th>
+        <th style="width: 40px;"></th>
+      </tr>
+    </thead>
+    <tbody id="coworkers-body"></tbody>
+  </table>
+
+  <script>
+    const timezones = [
+      { label: "PHT (Asia/Manila)", value: "Asia/Manila" },
+      { label: "GMT+3 (Etc/GMT-3)", value: "Etc/GMT-3" },
+      { label: "CET (Europe/Berlin)", value: "Europe/Berlin" },
+      { label: "ART (Argentina)", value: "America/Argentina/Buenos_Aires" },
+      { label: "UTC", value: "UTC" },
+      { label: "EST (America/New_York)", value: "America/New_York" },
+      { label: "CST (America/Chicago)", value: "America/Chicago" },
+      { label: "PST (America/Los_Angeles)", value: "America/Los_Angeles" },
+      { label: "IST (Asia/Kolkata)", value: "Asia/Kolkata" },
+      { label: "JST (Asia/Tokyo)", value: "Asia/Tokyo" }
+    ];
+
+    let coworkers = JSON.parse(localStorage.getItem('coworkersData')) || [];
+    const coworkersBody = document.getElementById('coworkers-body');
+    const addCoworkerBtn = document.getElementById('add-coworker-btn');
+
+    function renderCoworkers() {
+      coworkersBody.innerHTML = "";
+
+      coworkers.forEach((coworker, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "coworker-row";
+
+        tr.draggable = true;
+        tr.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', index);
+        });
+        tr.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          tr.classList.add('drop-hover');
+        });
+        tr.addEventListener('dragleave', () => {
+          tr.classList.remove('drop-hover');
+        });
+        tr.addEventListener('drop', (e) => {
+          e.preventDefault();
+          tr.classList.remove('drop-hover');
+          const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+          if (draggedIndex !== index) {
+            const draggedCoworker = coworkers.splice(draggedIndex, 1)[0];
+            coworkers.splice(index, 0, draggedCoworker);
+            saveToLocalStorage();
+            renderCoworkers();
+          }
+        });
+
+        const handleTd = document.createElement('td');
+        const handleSpan = document.createElement('span');
+        handleSpan.className = "drag-handle";
+        handleSpan.textContent = "≡";
+        handleTd.appendChild(handleSpan);
+
+        const nameTd = document.createElement('td');
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = coworker.name;
+        nameInput.onchange = () => {
+          coworkers[index].name = nameInput.value;
+          saveToLocalStorage();
+        };
+        nameTd.appendChild(nameInput);
+
+        const tzTd = document.createElement('td');
+        const tzSelect = document.createElement('select');
+        timezones.forEach((tz) => {
+          const option = document.createElement('option');
+          option.value = tz.value;
+          option.textContent = tz.label;
+          if (coworker.timezone === tz.value) {
+            option.selected = true;
+          }
+          tzSelect.appendChild(option);
+        });
+        tzSelect.onchange = () => {
+          coworkers[index].timezone = tzSelect.value;
+          saveToLocalStorage();
+        };
+        tzTd.appendChild(tzSelect);
+
+        const timeTd = document.createElement('td');
+        timeTd.id = 'time-' + index;
+
+        const actionTd = document.createElement('td');
+        const removeBtn = document.createElement('button');
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "X";
+        removeBtn.onclick = () => {
+          coworkers.splice(index, 1);
+          saveToLocalStorage();
+          renderCoworkers();
+        };
+        actionTd.appendChild(removeBtn);
+
+        tr.appendChild(handleTd);
+        tr.appendChild(nameTd);
+        tr.appendChild(tzTd);
+        tr.appendChild(timeTd);
+        tr.appendChild(actionTd);
+
+        coworkersBody.appendChild(tr);
+      });
+
+      updateTimes();
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem('coworkersData', JSON.stringify(coworkers));
+    }
+
+    function addCoworker() {
+      coworkers.push({ name: "New Coworker", timezone: "UTC" });
+      saveToLocalStorage();
+      renderCoworkers();
+    }
+
+    addCoworkerBtn.addEventListener('click', addCoworker);
+
+    function updateTimes() {
+      coworkers.forEach((coworker, index) => {
+        const timeCell = document.getElementById('time-' + index);
+        if (!timeCell) return;
+
+        const now = new Date();
+        const options = {
+          timeZone: coworker.timezone,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        };
+        const timeString = new Intl.DateTimeFormat([], options).format(now);
+        timeCell.textContent = timeString;
+      });
+    }
+
+    renderCoworkers();
+    setInterval(updateTimes, 1000);
+  </script>
+
+</body>
+</html>
