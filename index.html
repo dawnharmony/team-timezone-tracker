@@ -8,43 +8,38 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
-      max-width: 800px;
+      max-width: 1000px;
       margin: 20px auto;
       background: #f9fafb;
     }
-
     h2 {
       text-align: center;
       margin-bottom: 1rem;
     }
-
     table {
-      width: 100%;
+      width: 100%; /* Always use full width */
       border-collapse: collapse;
       background: #fff;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
     }
-
     th, td {
       border-bottom: 1px solid #ddd;
       padding: 10px;
       vertical-align: middle;
     }
-
     th {
+      white-space: nowrap;
       background: #f3f3f3;
       font-weight: 600;
       text-align: left;
     }
-
     .coworker-row:hover {
       background-color: #fdfdfd;
     }
-
     .drop-hover {
       background-color: #e8f3fe !important;
     }
-
     .drag-handle {
       cursor: move;
       user-select: none;
@@ -53,14 +48,12 @@
       color: #888;
       width: 40px;
     }
-
     .name-cell input[type="text"] {
       width: 100%;
       padding: 6px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-
     .remove-btn {
       color: #fff;
       background: #d33;
@@ -71,14 +64,15 @@
       cursor: pointer;
       border-radius: 4px;
     }
-
     .remove-btn:hover {
       background: #b00;
     }
-
-    #add-coworker-btn {
-      display: inline-block;
+    #buttons {
       margin-bottom: 1rem;
+    }
+    #buttons button {
+      display: inline-block;
+      margin-right: 10px;
       padding: 8px 16px;
       background: #4c9eff;
       color: #fff;
@@ -87,9 +81,146 @@
       cursor: pointer;
       font-size: 14px;
     }
-
-    #add-coworker-btn:hover {
+    #buttons button:hover {
       background: #3885dd;
+    }
+    /* Toggles container */
+    #toggles {
+      margin-bottom: 1rem;
+      font-size: 14px;
+    }
+    #toggles label {
+      margin-right: 20px;
+    }
+    #status-eye-toggle {
+      cursor: pointer;
+      font-size: 18px; /* Reduced from 24px */
+      margin-left: 8px; /* Added some spacing */
+      display: none;
+    }
+    /* Status Section */
+    #status-section {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .status-btn {
+      border: 1px solid #ccc;
+      background: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: default;
+    }
+    #status-filter-container {
+      display: none;
+      margin-top: 10px;
+    }
+    #segmented-control {
+      display: inline-block;
+    }
+    .seg-btn {
+      border: 1px solid #4c9eff;
+      background: #fff;
+      color: #4c9eff;
+      padding: 5px 10px;
+      cursor: pointer;
+      outline: none;
+      min-width: 120px;
+      text-align: center;
+    }
+    .seg-btn.active {
+      background: #4c9eff;
+      color: #fff;
+    }
+    .seg-btn:not(:last-child) {
+      border-right: none;
+    }
+    #select-project-container {
+      display: none;
+      margin-top: 5px;
+    }
+    #select-project-container select {
+      width: 100%;
+      padding: 4px;
+      font-size: 14px;
+    }
+    #status-filter-options {
+      margin-top: 10px;
+    }
+    #reset-filters {
+      margin-top: 10px;
+      padding: 5px 10px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 4px;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-content h3 {
+      margin-top: 0;
+    }
+    .modal-content p {
+      margin-bottom: 10px;
+    }
+    .modal-content select {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .modal-content button {
+      padding: 8px 16px;
+      margin-right: 10px;
+      background: #4c9eff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .modal-content button:hover {
+      background: #3885dd;
+    }
+    #close-project-modal {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+    }
+    .workhours-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .workhours-row span {
+      width: 120px;
+    }
+    .workhours-row select {
+      margin-right: 10px;
+      flex: 1;
     }
   </style>
 </head>
@@ -97,13 +228,18 @@
 
   <h2>Coworker Timezone Tracker</h2>
 
-  <button id="add-coworker-btn">Add Coworker</button>
+  <div id="buttons">
+    <button id="add-coworker-btn">Add Coworker</button>
+    <button id="manage-project-btn">Manage Projects</button>
+    <button id="manage-workhours-btn">Manage Work Hours</button>
+  </div>
 
   <table>
     <thead>
-      <tr>
+      <tr id="table-header">
         <th style="width: 40px;"></th>
         <th>Name</th>
+        <th>Project</th>
         <th>Time Zone</th>
         <th>Current Time</th>
         <th style="width: 40px;"></th>
@@ -112,31 +248,222 @@
     <tbody id="coworkers-body"></tbody>
   </table>
 
-  <script>
-    const timezones = [
-      { label: "PHT (Asia/Manila)", value: "Asia/Manila" },
-      { label: "GMT+3 (Etc/GMT-3)", value: "Etc/GMT-3" },
-      { label: "CET (Europe/Berlin)", value: "Europe/Berlin" },
-      { label: "ART (Argentina)", value: "America/Argentina/Buenos_Aires" },
-      { label: "UTC", value: "UTC" },
-      { label: "EST (America/New_York)", value: "America/New_York" },
-      { label: "CST (America/Chicago)", value: "America/Chicago" },
-      { label: "PST (America/Los_Angeles)", value: "America/Los_Angeles" },
-      { label: "IST (Asia/Kolkata)", value: "Asia/Kolkata" },
-      { label: "JST (Asia/Tokyo)", value: "Asia/Tokyo" }
-    ];
+  <!-- Toggles -->
+  <div id="toggles">
+    <label>
+      Show Time Zone Difference? <input type="checkbox" id="time-diff-checkbox">
+    </label>
+    <label>
+      Show Status? <input type="checkbox" id="status-checkbox">
+    </label>
+    <!-- Eye toggle placed outside the label -->
+    <span id="status-eye-toggle">👁️</span>
+  </div>
 
+  <!-- Status Section -->
+  <div id="status-section"></div>
+  <!-- Segmented Control for filtering status -->
+  <div id="status-filter-container">
+    <div id="segmented-control">
+      <button id="status-filter-everyone" class="seg-btn active">Everyone</button>
+      <button id="status-filter-select-project" class="seg-btn">Select Project</button>
+      <button id="status-filter-select-multiple" class="seg-btn">Select Multiple</button>
+    </div>
+    <div id="status-filter-options"></div>
+    <button id="reset-filters">Reset Filters</button>
+  </div>
+  <!-- Container for inline dropdown for Select Project -->
+  <div id="select-project-container"></div>
+
+  <!-- Modal for Managing Projects -->
+  <div id="project-modal" class="modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3>Manage Projects</h3>
+        <button id="modal-add-project-btn">Add Project</button>
+      </div>
+      <div id="project-list"></div>
+      <button id="close-project-modal">Close</button>
+    </div>
+  </div>
+
+  <!-- Modal for Time Zone Difference Settings -->
+  <div id="time-diff-modal" class="modal">
+    <div class="modal-content">
+      <h3>Time Zone Difference Settings</h3>
+      <p>This adds a new column that displays all time zones relative to the base time zone you set.</p>
+      <select id="base-timezone-dropdown">
+        <option value="">Select Base Time Zone</option>
+      </select>
+      <div>
+        <button id="time-diff-cancel-btn">Cancel</button>
+        <button id="time-diff-confirm-btn" disabled>Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Managing Work Hours -->
+  <div id="workhours-modal" class="modal">
+    <div class="modal-content">
+      <h3>Manage Work Hours</h3>
+      <p>
+        This is for displaying if coworkers are currently within work hours or not, and if they are working, to see how many hours left till they clock off.
+      </p>
+      <p>
+        After adding work hours for the coworkers, check the box near the "Show Status?" under the main table. Select their local hours, no need to convert :)
+      </p>
+      <div id="workhours-list"></div>
+      <div style="margin-top: 10px;">
+        <button id="workhours-cancel-btn">Cancel</button>
+        <button id="workhours-confirm-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global arrays loaded from localStorage (or default values)
+    let timezones = [
+      { label: "ART (Argentina)", value: "America/Argentina/Buenos_Aires" },
+      { label: "CET (Europe/Berlin)", value: "Europe/Berlin" },
+      { label: "CST (America/Chicago)", value: "America/Chicago" },
+      { label: "EST (America/New_York)", value: "America/New_York" },
+      { label: "GMT (Etc/GMT)", value: "Etc/GMT" },
+      { label: "GMT+2 (Etc/GMT-2)", value: "Etc/GMT-2" },
+      { label: "GMT+3 (Etc/GMT-3)", value: "Etc/GMT-3" },
+      { label: "GMT+6 (Etc/GMT-6)", value: "Etc/GMT-6" },
+      { label: "IST (Asia/Kolkata)", value: "Asia/Kolkata" },
+      { label: "JST (Asia/Tokyo)", value: "Asia/Tokyo" },
+      { label: "PHT (Asia/Manila)", value: "Asia/Manila" },
+      { label: "PST (America/Los_Angeles)", value: "America/Los_Angeles" },
+      { label: "SAST (Africa/Johannesburg)", value: "Africa/Johannesburg" },
+      { label: "UTC", value: "UTC" },
+      { label: "WET (WET)", value: "WET" }
+    ];
+    let projects = JSON.parse(localStorage.getItem('projectsData')) || [];
     let coworkers = JSON.parse(localStorage.getItem('coworkersData')) || [];
+    // Ensure each coworker has work hours properties
+    coworkers.forEach(cw => {
+      if (typeof cw.workStart === "undefined") cw.workStart = "";
+      if (typeof cw.workEnd === "undefined") cw.workEnd = "";
+    });
+
+    // Time Diff global state
+    let timeDiffEnabled = false;
+    let baseTimeZone = "";
+
+    // Status filter global state
+    let statusFilterMode = "everyone"; // "everyone", "select-project", "select-multiple"
+    let statusFilterProject = "";
+    let statusFilterProjects = [];
+
     const coworkersBody = document.getElementById('coworkers-body');
     const addCoworkerBtn = document.getElementById('add-coworker-btn');
+    const manageProjectBtn = document.getElementById('manage-project-btn');
+    const manageWorkhoursBtn = document.getElementById('manage-workhours-btn');
 
+    // Modal elements for Projects
+    const projectModal = document.getElementById('project-modal');
+    const projectListDiv = document.getElementById('project-list');
+    const closeProjectModalBtn = document.getElementById('close-project-modal');
+    const modalAddProjectBtn = document.getElementById('modal-add-project-btn');
+
+    // Modal elements for Time Diff
+    const timeDiffModal = document.getElementById('time-diff-modal');
+    const baseTZDropdown = document.getElementById('base-timezone-dropdown');
+    const timeDiffCancelBtn = document.getElementById('time-diff-cancel-btn');
+    const timeDiffConfirmBtn = document.getElementById('time-diff-confirm-btn');
+    const timeDiffCheckbox = document.getElementById('time-diff-checkbox');
+
+    // Modal elements for Work Hours
+    const workhoursModal = document.getElementById('workhours-modal');
+    const workhoursListDiv = document.getElementById('workhours-list');
+    const workhoursCancelBtn = document.getElementById('workhours-cancel-btn');
+    const workhoursConfirmBtn = document.getElementById('workhours-confirm-btn');
+
+    // Status section and filter elements
+    const statusSection = document.getElementById('status-section');
+    const statusCheckbox = document.getElementById('status-checkbox');
+    const statusFilterContainer = document.getElementById('status-filter-container');
+    const statusFilterOptions = document.getElementById('status-filter-options');
+    const segEveryone = document.getElementById('status-filter-everyone');
+    const segSelectProject = document.getElementById('status-filter-select-project');
+    const segSelectMultiple = document.getElementById('status-filter-select-multiple');
+    const selectProjectContainer = document.getElementById('select-project-container');
+
+    // Default label for "Select Project" segment
+    const defaultSelectProjectLabel = "Select Project";
+    segSelectProject.textContent = defaultSelectProjectLabel;
+
+    // ----------------- Eye Toggle for Status Filter -----------------
+    const statusEyeToggle = document.getElementById("status-eye-toggle");
+    statusEyeToggle.style.display = "none"; // will be shown when status is enabled
+    statusEyeToggle.addEventListener("click", () => {
+      if (statusFilterContainer.style.display === "none" || statusFilterContainer.style.display === "") {
+        statusFilterContainer.style.display = "block";
+        statusEyeToggle.textContent = "🙈";
+      } else {
+        statusFilterContainer.style.display = "none";
+        statusEyeToggle.textContent = "👁️";
+      }
+    });
+
+    // ----------------- Update Table Header -----------------
+    function updateTableHeader() {
+      const headerRow = document.getElementById('table-header');
+      if (timeDiffEnabled && baseTimeZone) {
+        headerRow.innerHTML = `
+          <th style="width: 40px;"></th>
+          <th>Name</th>
+          <th>Project</th>
+          <th>Time Zone</th>
+          <th>Current Time</th>
+          <th>Difference</th>
+          <th style="width: 40px;"></th>
+        `;
+      } else {
+        headerRow.innerHTML = `
+          <th style="width: 40px;"></th>
+          <th>Name</th>
+          <th>Project</th>
+          <th>Time Zone</th>
+          <th>Current Time</th>
+          <th style="width: 40px;"></th>
+        `;
+      }
+    }
+
+    function computeTimeDifference(baseTZ, coworkerTZ) {
+      let now = new Date();
+      let baseTimeStr = now.toLocaleString("en-US", { timeZone: baseTZ });
+      let coworkerTimeStr = now.toLocaleString("en-US", { timeZone: coworkerTZ });
+      let baseTime = new Date(baseTimeStr);
+      let coworkerTime = new Date(coworkerTimeStr);
+      let diffMs = coworkerTime - baseTime;
+      let diffMinutes = Math.round(diffMs / 60000);
+      let sign = diffMinutes >= 0 ? "+" : "-";
+      let absMinutes = Math.abs(diffMinutes);
+      let hours = Math.floor(absMinutes / 60);
+      let minutes = absMinutes % 60;
+      return `${sign}${hours}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    // ----------------- Render Main Table -----------------
     function renderCoworkers() {
+      updateTableHeader();
       coworkersBody.innerHTML = "";
-
+      if (coworkers.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = (timeDiffEnabled && baseTimeZone) ? 7 : 6;
+        cell.style.textAlign = "center";
+        cell.textContent = "No coworkers added yet.";
+        row.appendChild(cell);
+        coworkersBody.appendChild(row);
+        return;
+      }
       coworkers.forEach((coworker, index) => {
         const tr = document.createElement('tr');
         tr.className = "coworker-row";
-
         tr.draggable = true;
         tr.addEventListener('dragstart', (e) => {
           e.dataTransfer.setData('text/plain', index);
@@ -155,27 +482,48 @@
           if (draggedIndex !== index) {
             const draggedCoworker = coworkers.splice(draggedIndex, 1)[0];
             coworkers.splice(index, 0, draggedCoworker);
-            saveToLocalStorage();
+            saveCoworkers();
             renderCoworkers();
           }
         });
-
+        // Drag handle
         const handleTd = document.createElement('td');
         const handleSpan = document.createElement('span');
         handleSpan.className = "drag-handle";
         handleSpan.textContent = "≡";
         handleTd.appendChild(handleSpan);
-
+        // Name
         const nameTd = document.createElement('td');
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.value = coworker.name;
         nameInput.onchange = () => {
           coworkers[index].name = nameInput.value;
-          saveToLocalStorage();
+          saveCoworkers();
         };
         nameTd.appendChild(nameInput);
-
+        // Project
+        const projectTd = document.createElement('td');
+        const projectSelect = document.createElement('select');
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "-- Select Project --";
+        projectSelect.appendChild(defaultOption);
+        projects.forEach((proj) => {
+          const option = document.createElement('option');
+          option.value = proj;
+          option.textContent = proj;
+          if (coworker.project === proj) {
+            option.selected = true;
+          }
+          projectSelect.appendChild(option);
+        });
+        projectSelect.onchange = () => {
+          coworkers[index].project = projectSelect.value;
+          saveCoworkers();
+        };
+        projectTd.appendChild(projectSelect);
+        // Time Zone
         const tzTd = document.createElement('td');
         const tzSelect = document.createElement('select');
         timezones.forEach((tz) => {
@@ -189,64 +537,438 @@
         });
         tzSelect.onchange = () => {
           coworkers[index].timezone = tzSelect.value;
-          saveToLocalStorage();
+          saveCoworkers();
         };
         tzTd.appendChild(tzSelect);
-
+        // Current Time
         const timeTd = document.createElement('td');
         timeTd.id = 'time-' + index;
-
+        // Remove button
         const actionTd = document.createElement('td');
         const removeBtn = document.createElement('button');
         removeBtn.className = "remove-btn";
         removeBtn.textContent = "X";
         removeBtn.onclick = () => {
           coworkers.splice(index, 1);
-          saveToLocalStorage();
+          saveCoworkers();
           renderCoworkers();
         };
         actionTd.appendChild(removeBtn);
-
+        // Append cells
         tr.appendChild(handleTd);
         tr.appendChild(nameTd);
+        tr.appendChild(projectTd);
         tr.appendChild(tzTd);
         tr.appendChild(timeTd);
+        if (timeDiffEnabled && baseTimeZone) {
+          const diffTd = document.createElement('td');
+          diffTd.id = 'diff-' + index;
+          diffTd.textContent = computeTimeDifference(baseTimeZone, coworker.timezone);
+          tr.appendChild(diffTd);
+        }
         tr.appendChild(actionTd);
-
         coworkersBody.appendChild(tr);
       });
-
       updateTimes();
     }
 
-    function saveToLocalStorage() {
-      localStorage.setItem('coworkersData', JSON.stringify(coworkers));
+    // ----------------- Status Section & Filtering -----------------
+    function getCoworkerStatus(cw) {
+      if (!cw.workStart || !cw.workEnd) {
+        return { emoji: "🟡", tooltip: "Information not set up yet" };
+      }
+      function getTimeInMinutes(timeStr) {
+        const [h, m] = timeStr.split(":").map(Number);
+        return h * 60 + m;
+      }
+      let currentStr = new Date().toLocaleTimeString("en-US", {
+        timeZone: cw.timezone,
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+      let current = getTimeInMinutes(currentStr);
+      let start = getTimeInMinutes(cw.workStart);
+      let end = getTimeInMinutes(cw.workEnd);
+      if (end <= start) {
+        end += 24 * 60;
+        if (current < start) current += 24 * 60;
+      }
+      if (current >= start && current <= end) {
+        let diff = end - current;
+        return { emoji: "🟢", tooltip: `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff % 60).toString().padStart(2,'0')} till EOD` };
+      } else {
+        let diff = current < start ? (start - current) : (24*60 - current + start);
+        return { emoji: "🔴", tooltip: `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff % 60).toString().padStart(2,'0')} till start` };
+      }
     }
-
-    function addCoworker() {
-      coworkers.push({ name: "New Coworker", timezone: "UTC" });
-      saveToLocalStorage();
-      renderCoworkers();
-    }
-
-    addCoworkerBtn.addEventListener('click', addCoworker);
-
-    function updateTimes() {
-      coworkers.forEach((coworker, index) => {
-        const timeCell = document.getElementById('time-' + index);
-        if (!timeCell) return;
-
-        const now = new Date();
-        const options = {
-          timeZone: coworker.timezone,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        };
-        const timeString = new Intl.DateTimeFormat([], options).format(now);
-        timeCell.textContent = timeString;
+    function renderStatusSection() {
+      statusSection.innerHTML = "";
+      let filtered = coworkers.filter(cw => {
+        if (statusFilterMode === "everyone") return true;
+        else if (statusFilterMode === "select-project") {
+          return cw.project === statusFilterProject;
+        } else if (statusFilterMode === "select-multiple") {
+          return statusFilterProjects.includes(cw.project);
+        }
+        return true;
+      });
+      let statusArr = filtered.map(cw => {
+        let stat = getCoworkerStatus(cw);
+        return { cw, emoji: stat.emoji, tooltip: stat.tooltip };
+      });
+      function statusOrder(emoji) {
+        if (emoji === "🟢") return 0;
+        if (emoji === "🔴") return 1;
+        if (emoji === "🟡") return 2;
+        return 3;
+      }
+      statusArr.sort((a, b) => {
+        let orderDiff = statusOrder(a.emoji) - statusOrder(b.emoji);
+        if (orderDiff !== 0) return orderDiff;
+        return a.cw.name.localeCompare(b.cw.name);
+      });
+      statusArr.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = "status-btn";
+        btn.textContent = item.cw.name + " " + item.emoji;
+        btn.title = item.tooltip;
+        statusSection.appendChild(btn);
       });
     }
+
+    // ----------------- Save and Add Functions -----------------
+    function saveCoworkers() {
+      localStorage.setItem('coworkersData', JSON.stringify(coworkers));
+    }
+    function saveProjects() {
+      localStorage.setItem('projectsData', JSON.stringify(projects));
+    }
+    function addCoworker() {
+      coworkers.push({ name: "New Coworker", timezone: "UTC", project: "", workStart: "", workEnd: "" });
+      saveCoworkers();
+      renderCoworkers();
+    }
+    addCoworkerBtn.addEventListener('click', addCoworker);
+
+    // ----------------- Manage Projects Modal -----------------
+    manageProjectBtn.addEventListener('click', () => {
+      renderProjectList();
+      projectModal.style.display = "block";
+    });
+    closeProjectModalBtn.addEventListener('click', () => { projectModal.style.display = "none"; });
+    modalAddProjectBtn.addEventListener('click', () => {
+      const newProject = prompt("Enter new project name:");
+      if (newProject && newProject.trim() !== "") {
+        if (!projects.includes(newProject)) {
+          projects.push(newProject);
+          saveProjects();
+          renderProjectList();
+          renderCoworkers();
+        } else {
+          alert("Project already exists!");
+        }
+      }
+    });
+    function renderProjectList() {
+      projectListDiv.innerHTML = "";
+      if (projects.length === 0) {
+        projectListDiv.textContent = "No projects added.";
+        return;
+      }
+      projects.forEach((proj, index) => {
+        const div = document.createElement('div');
+        div.className = "project-item";
+        const span = document.createElement('span');
+        span.textContent = proj;
+        div.appendChild(span);
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = "project-actions";
+        const renameBtn = document.createElement('button');
+        renameBtn.textContent = "Rename";
+        renameBtn.addEventListener('click', () => {
+          const newName = prompt("Enter new name for the project:", proj);
+          if (newName && newName.trim() !== "" && !projects.includes(newName)) {
+            projects[index] = newName;
+            saveProjects();
+            coworkers = coworkers.map(cw => {
+              if (cw.project === proj) { cw.project = newName; }
+              return cw;
+            });
+            saveCoworkers();
+            renderProjectList();
+            renderCoworkers();
+          } else if (projects.includes(newName)) {
+            alert("Project already exists!");
+          }
+        });
+        actionsDiv.appendChild(renameBtn);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = "Delete";
+        deleteBtn.addEventListener('click', () => {
+          if (confirm("Are you sure you want to delete this project? It will be removed from all coworkers.")) {
+            projects.splice(index, 1);
+            saveProjects();
+            coworkers = coworkers.map(cw => {
+              if (cw.project === proj) { cw.project = ""; }
+              return cw;
+            });
+            saveCoworkers();
+            renderProjectList();
+            renderCoworkers();
+          }
+        });
+        actionsDiv.appendChild(deleteBtn);
+        div.appendChild(actionsDiv);
+        projectListDiv.appendChild(div);
+      });
+    }
+
+    // ----------------- Time Diff Modal -----------------
+    function populateBaseTZDropdown() {
+      baseTZDropdown.innerHTML = '<option value="">Select Base Time Zone</option>';
+      timezones.forEach(tz => {
+        const option = document.createElement('option');
+        option.value = tz.value;
+        option.textContent = tz.label;
+        baseTZDropdown.appendChild(option);
+      });
+    }
+    baseTZDropdown.addEventListener('change', () => {
+      timeDiffConfirmBtn.disabled = baseTZDropdown.value === "";
+    });
+    timeDiffCancelBtn.addEventListener('click', () => {
+      timeDiffModal.style.display = "none";
+      timeDiffCheckbox.checked = false;
+    });
+    timeDiffConfirmBtn.addEventListener('click', () => {
+      baseTimeZone = baseTZDropdown.value;
+      timeDiffEnabled = true;
+      timeDiffModal.style.display = "none";
+      renderCoworkers();
+    });
+    timeDiffCheckbox.addEventListener('change', () => {
+      if (timeDiffCheckbox.checked) {
+        populateBaseTZDropdown();
+        baseTZDropdown.value = "";
+        timeDiffConfirmBtn.disabled = true;
+        timeDiffModal.style.display = "block";
+      } else {
+        timeDiffEnabled = false;
+        baseTimeZone = "";
+        renderCoworkers();
+      }
+    });
+
+    // ----------------- Work Hours Modal -----------------
+    function generateTimeOptions() {
+      let options = "";
+      for (let i = 0; i < 48; i++) {
+        let hours = Math.floor(i / 2);
+        let minutes = (i % 2) === 0 ? "00" : "30";
+        let timeStr = hours.toString().padStart(2, '0') + ":" + minutes;
+        options += `<option value="${timeStr}">${timeStr}</option>`;
+      }
+      return options;
+    }
+    function populateWorkHoursModal() {
+      workhoursListDiv.innerHTML = "";
+      const timeOptionsHTML = generateTimeOptions();
+      coworkers.forEach((cw, idx) => {
+        const row = document.createElement('div');
+        row.className = "workhours-row";
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = cw.name;
+        row.appendChild(nameSpan);
+        const startSelect = document.createElement('select');
+        startSelect.innerHTML = `<option value="">Start</option>` + timeOptionsHTML;
+        startSelect.value = cw.workStart || "";
+        startSelect.id = "work-start-" + idx;
+        row.appendChild(startSelect);
+        const endSelect = document.createElement('select');
+        endSelect.innerHTML = `<option value="">End</option>` + timeOptionsHTML;
+        endSelect.value = cw.workEnd || "";
+        endSelect.id = "work-end-" + idx;
+        row.appendChild(endSelect);
+        workhoursListDiv.appendChild(row);
+      });
+    }
+    manageWorkhoursBtn.addEventListener('click', () => {
+      populateWorkHoursModal();
+      workhoursModal.style.display = "block";
+    });
+    workhoursCancelBtn.addEventListener('click', () => {
+      workhoursModal.style.display = "none";
+    });
+    workhoursConfirmBtn.addEventListener('click', () => {
+      coworkers.forEach((cw, idx) => {
+        const startSelect = document.getElementById("work-start-" + idx);
+        const endSelect = document.getElementById("work-end-" + idx);
+        cw.workStart = startSelect.value || "";
+        cw.workEnd = endSelect.value || "";
+      });
+      saveCoworkers();
+      workhoursModal.style.display = "none";
+    });
+
+    // ----------------- Status Section & Filtering -----------------
+    setInterval(() => {
+      if (statusCheckbox.checked) {
+        renderStatusSection();
+      }
+    }, 1000);
+    statusCheckbox.addEventListener('change', () => {
+      if (statusCheckbox.checked) {
+        const anySet = coworkers.some(cw => cw.workStart && cw.workEnd);
+        if (!anySet) {
+          alert("You haven't set the work hours for any coworker yet. Please first do it by clicking 'Manage Work Hours'.");
+          statusCheckbox.checked = false;
+          statusSection.innerHTML = "";
+          statusFilterContainer.style.display = "none";
+          statusEyeToggle.style.display = "none";
+          return;
+        }
+        renderStatusSection();
+        statusFilterContainer.style.display = "block";
+        statusEyeToggle.style.display = "inline";
+        statusEyeToggle.textContent = "👁️";
+        selectProjectContainer.style.display = "none";
+        segSelectProject.textContent = defaultSelectProjectLabel;
+      } else {
+        statusSection.innerHTML = "";
+        statusFilterContainer.style.display = "none";
+        statusEyeToggle.style.display = "none";
+        statusFilterMode = "everyone";
+        statusFilterProject = "";
+        statusFilterProjects = [];
+      }
+    });
+
+    segEveryone.addEventListener('click', () => {
+      statusFilterMode = "everyone";
+      segEveryone.classList.add("active");
+      segSelectProject.classList.remove("active");
+      segSelectMultiple.classList.remove("active");
+      segSelectProject.textContent = defaultSelectProjectLabel;
+      selectProjectContainer.style.display = "none";
+      statusFilterOptions.innerHTML = "";
+      renderStatusSection();
+    });
+
+    segSelectProject.addEventListener('click', () => {
+      statusFilterMode = "select-project";
+      segEveryone.classList.remove("active");
+      segSelectProject.classList.add("active");
+      segSelectMultiple.classList.remove("active");
+      statusFilterOptions.innerHTML = "";
+      // Show inline dropdown in the dedicated container
+      selectProjectContainer.innerHTML = "";
+      selectProjectContainer.style.display = "block";
+      let dropdown = document.createElement('select');
+      dropdown.style.width = "100%";
+      dropdown.style.padding = "4px";
+      dropdown.style.fontSize = "14px";
+      let defaultOpt = document.createElement('option');
+      defaultOpt.value = "";
+      defaultOpt.textContent = "Select Project";
+      defaultOpt.disabled = true;
+      defaultOpt.selected = true;
+      dropdown.appendChild(defaultOpt);
+      projects.forEach(proj => {
+        let opt = document.createElement('option');
+        opt.value = proj;
+        opt.textContent = proj;
+        dropdown.appendChild(opt);
+      });
+      selectProjectContainer.appendChild(dropdown);
+      dropdown.addEventListener('change', () => {
+        statusFilterProject = dropdown.value;
+        segSelectProject.textContent = dropdown.value;
+        selectProjectContainer.style.display = "none";
+        renderStatusSection();
+      });
+    });
+
+    segSelectMultiple.addEventListener('click', () => {
+      statusFilterMode = "select-multiple";
+      segEveryone.classList.remove("active");
+      segSelectProject.classList.remove("active");
+      segSelectMultiple.classList.add("active");
+      segSelectProject.textContent = defaultSelectProjectLabel;
+      selectProjectContainer.style.display = "none";
+      statusFilterProjects = [];
+      let container = document.createElement('div');
+      container.style.border = "1px solid #ccc";
+      container.style.padding = "10px";
+      container.style.borderRadius = "4px";
+      projects.forEach(proj => {
+        let label = document.createElement('label');
+        label.style.display = "block";
+        let checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.value = proj;
+        checkbox.addEventListener('change', () => {
+          if (checkbox.checked) {
+            if (!statusFilterProjects.includes(proj)) {
+              statusFilterProjects.push(proj);
+            }
+          } else {
+            statusFilterProjects = statusFilterProjects.filter(p => p !== proj);
+          }
+        });
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(" " + proj));
+        container.appendChild(label);
+      });
+      let confirmBtn = document.createElement('button');
+      confirmBtn.textContent = "Confirm";
+      confirmBtn.addEventListener('click', () => {
+        renderStatusSection();
+        statusFilterOptions.innerHTML = "";
+      });
+      container.appendChild(confirmBtn);
+      statusFilterOptions.innerHTML = "";
+      statusFilterOptions.appendChild(container);
+    });
+
+    // Reset Filters Button – new feature!
+    document.getElementById("reset-filters").addEventListener("click", () => {
+      statusFilterMode = "everyone";
+      statusFilterProject = "";
+      statusFilterProjects = [];
+      segEveryone.classList.add("active");
+      segSelectProject.classList.remove("active");
+      segSelectMultiple.classList.remove("active");
+      segSelectProject.textContent = defaultSelectProjectLabel;
+      selectProjectContainer.style.display = "none";
+      statusFilterOptions.innerHTML = "";
+      renderStatusSection();
+    });
+
+    // ----------------- Update Times -----------------
+    function updateTimes() {
+      coworkers.forEach((cw, idx) => {
+        const timeCell = document.getElementById('time-' + idx);
+        if (timeCell) {
+          const now = new Date();
+          const options = { timeZone: cw.timezone, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+          timeCell.textContent = new Intl.DateTimeFormat([], options).format(now);
+        }
+        if (timeDiffEnabled && baseTimeZone) {
+          const diffCell = document.getElementById('diff-' + idx);
+          if (diffCell) {
+            diffCell.textContent = computeTimeDifference(baseTimeZone, cw.timezone);
+          }
+        }
+      });
+    }
+
+    // ----------------- Modal Dismiss on Click Outside -----------------
+    window.onclick = function(event) {
+      if (event.target === projectModal) { projectModal.style.display = "none"; }
+      if (event.target === timeDiffModal) { timeDiffModal.style.display = "none"; timeDiffCheckbox.checked = false; }
+      if (event.target === workhoursModal) { workhoursModal.style.display = "none"; }
+    };
 
     renderCoworkers();
     setInterval(updateTimes, 1000);
